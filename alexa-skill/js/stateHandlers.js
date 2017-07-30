@@ -76,7 +76,10 @@ var stateHandlers = {
         },
         
         'SessionEndedRequest' : function () {
-            // No session ended logic
+            const intent = this.event.request.intent;
+            VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
+                this.emit(':tell', 'You have done a great job today. See You.');
+            })
         },
         'Unhandled' : function () {
             var message = 'Sorry, I could not understand. Please say, play the audio, to begin the audio.';
@@ -199,7 +202,10 @@ var stateHandlers = {
         },
         */
         'SessionEndedRequest' : function () {
-            // No session ended logic
+            const intent = this.event.request.intent;
+            VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
+                this.emit(':tell', 'You have done a great job today. See You.');
+            })
         },
 
         'Unhandled' : function () {
@@ -257,7 +263,10 @@ var stateHandlers = {
             });            
         },        
         'SessionEndedRequest' : function () {
-            // No session ended logic
+            const intent = this.event.request.intent;
+            VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
+                this.emit(':tell', 'You have done a great job today. See You.');
+            })
         },
         'Unhandled' : function () {
             var message = 'Sorry, I could not understand. You can say, Next or Previous to navigate through the playlist.';
