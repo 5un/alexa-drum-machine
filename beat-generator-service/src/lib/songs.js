@@ -10,6 +10,7 @@ a-lot-of-livin-to-do
 a-nightingale-sang-in-berkeley-square
 a-red-red-rose
 a-shine-on-your-shoes
+a-song-by-the-beatles
 a-white-sport-coat
 a-wonderful-day-like-today
 aba-daba-honeymoon
