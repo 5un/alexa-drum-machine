@@ -14,7 +14,16 @@ var commonHandlers = {
         request
            .get(`${constants.beatGeneratorAPI}/generate?tempo=120&groove=${genre}`)
            .end((err, res) => {
+                // TODO set tempo
+                const tempo = 120;
+                this.attributes['currentContent'] = 'groove';
+                this.attributes['currentGroove'] = genre;
+                this.attributes['currentTempo'] = tempo; // Default Tempo
+
+                const confirmation = `Playing the ${genre} groove at tempo ${tempo}`
+                this.response.speak(confirmation);
                 this.response.audioPlayerPlay('REPLACE_ALL', res.body.url, 1, null, 0);
+
                 this.emit(':responseReady');
            });
     },
@@ -26,12 +35,32 @@ var commonHandlers = {
         request
            .get(`${constants.beatGeneratorAPI}/songs/search?q=${song}`)
            .end((err, res) => {
+                // TODO set tempo
+                const tempo = res.body.originalTempo;
+                this.attributes['currentContent'] = 'song';
+                this.attributes['currentSong'] = song;
+                this.attributes['currentTempo'] = tempo;
+
+                const confirmation = `Playing the song ${song} at tempo ${tempo}`
+                this.response.speak(confirmation);
                 this.response.audioPlayerPlay('REPLACE_ALL', res.body.url, 1, null, 0);
                 this.emit(':responseReady');
                 // VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
                 //     this.emit(':responseReady');
                 // });    
            });
+    },
+    CheckCurrentAudioIntent: function() {
+        if(this.attributes['currentContent'] === 'song') {
+            const song = this.attributes['currentSong'];
+            const tempo = this.attributes['currentTempo'];
+            this.response.speak(`Playing the song ${song} at tempo ${tempo}`);
+        } else if(this.attributes['currentContent'] === 'groove')  {
+            const groove = this.attributes['currentGroove'];
+            const tempo = this.attributes['currentTempo'];
+            this.response.speak(`Playing the ${groove} groove  at tempo ${tempo}`);
+        }
+        this.emit(':responseReady');
     }
 
 };
@@ -87,6 +116,8 @@ var stateHandlers = {
         'PlayAudioWithSongNameIntent' : commonHandlers.PlayAudioWithSongNameIntent,
 
         'PlayGrooveWithGenreIntent': commonHandlers.PlayGrooveWithGenreIntent,
+
+        'CheckCurrentAudioIntent': commonHandlers.CheckCurrentAudioIntent,
 
         'SessionEndedRequest' : function () {
             // No session ended logic
@@ -153,6 +184,7 @@ var stateHandlers = {
             var message = "Variation Faster Intent";
             this.response.speak(message).listen(message);
             const intent = this.event.request.intent;
+            // TODO set tempo and replay the same thing
             VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
                 this.emit(':responseReady');
             });            
@@ -161,6 +193,7 @@ var stateHandlers = {
             var message = "Variation Slower Intent";
             this.response.speak(message).listen(message);
             const intent = this.event.request.intent;
+            // TODO set tempo and replay the same thing
             VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
                 this.emit(':responseReady');
             });            
@@ -217,6 +250,8 @@ var stateHandlers = {
 
         'PlayGrooveWithGenreIntent': commonHandlers.PlayGrooveWithGenreIntent,
 
+        'CheckCurrentAudioIntent': commonHandlers.CheckCurrentAudioIntent,
+
         'SessionEndedRequest' : function () {
             // No session ended logic
         },
@@ -271,6 +306,8 @@ var stateHandlers = {
         'PlayAudioWithSongNameIntent' : commonHandlers.PlayAudioWithSongNameIntent,
         
         'PlayGrooveWithGenreIntent': commonHandlers.PlayGrooveWithGenreIntent,
+
+        'CheckCurrentAudioIntent': commonHandlers.CheckCurrentAudioIntent,
 
         'SessionEndedRequest' : function () {
             // No session ended logic
