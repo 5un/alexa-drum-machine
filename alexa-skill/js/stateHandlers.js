@@ -3,6 +3,21 @@
 var Alexa = require('alexa-sdk');
 var audioData = require('./audioAssets');
 var constants = require('./constants');
+var request = require('superagent');
+var _ = require('lodash');
+
+var commonHandlers = {
+    PlayGrooveWithGenreIntent: function () {
+        this.handler.state = constants.states.PLAY_MODE;
+        const genre = _.get(this, 'event.request.intent.slots.genre.value');
+        request
+           .get(`${constants.beatGeneratorAPI}/generate?tempo=120&groove=${genre}`)
+           .end((err, res) => {
+                this.response.audioPlayerPlay('REPLACE_ALL', res.body.url, 1, null, 0);
+                this.emit(':responseReady');
+           });
+    }
+};
 
 var stateHandlers = {
     startModeIntentHandlers : Alexa.CreateStateHandler(constants.states.START_MODE, {
@@ -57,11 +72,15 @@ var stateHandlers = {
                 this.handler.state = constants.states.START_MODE;
             }
             */
+            const song = _.get(this, 'event.request.intent.slots.song.value');
+
             this.handler.state = constants.states.PLAY_MODE;
-            this.response.speak("Play Audio With Song Name Intent").listen("Play Audio With Song Name Intent");
+            this.response.speak("Play Audio With Song Name Intent " + song).listen("Play Audio With Song Name Intent");
             this.emit(':responseReady');
         },
-        
+
+        'PlayGrooveWithGenreIntent': commonHandlers.PlayGrooveWithGenreIntent,
+
         'SessionEndedRequest' : function () {
             // No session ended logic
         },
@@ -151,6 +170,9 @@ var stateHandlers = {
             this.emit(':responseReady');
         },
         */
+
+        'PlayGrooveWithGenreIntent': commonHandlers.PlayGrooveWithGenreIntent,
+
         'SessionEndedRequest' : function () {
             // No session ended logic
         },
@@ -191,10 +213,15 @@ var stateHandlers = {
             this.emit(':responseReady');
         },
         'PlayAudioWithSongNameIntent' : function () {
+            const song = _.get(this, 'event.request.intent.slots.song.value');
+
             this.handler.state = constants.states.PLAY_MODE;
-            this.response.speak("Play Audio With Song Name Intent").listen("Play Audio With Song Name Intent");
+            this.response.speak("Play Audio With Song Name Intent " + song).listen("Play Audio With Song Name Intent");
             this.emit(':responseReady');
-        },        
+        },    
+        
+        'PlayGrooveWithGenreIntent': commonHandlers.PlayGrooveWithGenreIntent,
+
         'SessionEndedRequest' : function () {
             // No session ended logic
         },
