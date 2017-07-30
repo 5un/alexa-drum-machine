@@ -9,46 +9,13 @@ var _ = require('lodash');
 
 var commonHandlers = {
     PlayGrooveWithGenreIntent: function () {
-        this.handler.state = constants.states.PLAY_MODE;
         const genre = _.get(this, 'event.request.intent.slots.genre.value');
-        request
-           .get(`${constants.beatGeneratorAPI}/generate?tempo=120&groove=${genre}`)
-           .end((err, res) => {
-                // TODO set tempo
-                const tempo = 120;
-                this.attributes['currentContent'] = 'groove';
-                this.attributes['currentGroove'] = genre;
-                this.attributes['currentTempo'] = tempo; // Default Tempo
-
-                const confirmation = `Playing the ${genre} groove at tempo ${tempo}`
-                this.response.speak(confirmation);
-                this.response.audioPlayerPlay('REPLACE_ALL', res.body.url, 1, null, 0);
-
-                this.emit(':responseReady');
-           });
+        const tempo = 120;
+        controller.playGroove.call(this, genre, tempo);
     },
     PlayAudioWithSongNameIntent: function() {
-        var message = 'Play Audio With Song Name Intent';
         const song = _.get(this, 'event.request.intent.slots.song.value');
-        const intent = this.event.request.intent;
-        this.handler.state = constants.states.PLAY_MODE;
-        request
-           .get(`${constants.beatGeneratorAPI}/songs/search?q=${song}`)
-           .end((err, res) => {
-                // TODO set tempo
-                const tempo = res.body.originalTempo;
-                this.attributes['currentContent'] = 'song';
-                this.attributes['currentSong'] = song;
-                this.attributes['currentTempo'] = tempo;
-
-                const confirmation = `Playing the song ${song} at tempo ${tempo}`
-                this.response.speak(confirmation);
-                this.response.audioPlayerPlay('REPLACE_ALL', res.body.url, 1, null, 0);
-                this.emit(':responseReady');
-                // VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
-                //     this.emit(':responseReady');
-                // });    
-           });
+        controller.playSong.call(this, song, undefined);
     },
     CheckCurrentAudioIntent: function() {
         if(this.attributes['currentContent'] === 'song') {
@@ -181,22 +148,34 @@ var stateHandlers = {
             });            
         },
         'VariationFasterIntent' : function () { 
-            var message = "Variation Faster Intent";
-            this.response.speak(message).listen(message);
-            const intent = this.event.request.intent;
-            // TODO set tempo and replay the same thing
-            VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
-                this.emit(':responseReady');
-            });            
+            if(this.attributes['currentContent'] === 'song') {
+                const song = this.attributes['currentSong'];
+                const tempo = this.attributes['currentTempo'];
+                controller.playSong.call(this, song, tempo + 10);
+            } else if(this.attributes['currentContent'] === 'groove')  {
+                const groove = this.attributes['currentGroove'];
+                const tempo = this.attributes['currentTempo'];
+                controller.playGroove.call(this, genre, tempo + 10);
+            }
+
+            // VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
+            //     this.emit(':responseReady');
+            // });            
         },
         'VariationSlowerIntent' : function () { 
-            var message = "Variation Slower Intent";
-            this.response.speak(message).listen(message);
-            const intent = this.event.request.intent;
-            // TODO set tempo and replay the same thing
-            VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
-                this.emit(':responseReady');
-            });            
+            if(this.attributes['currentContent'] === 'song') {
+                const song = this.attributes['currentSong'];
+                const tempo = this.attributes['currentTempo'];
+                controller.playSong.call(this, song, Math.max(tempo - 10, constants.minTempo) );
+            } else if(this.attributes['currentContent'] === 'groove')  {
+                const groove = this.attributes['currentGroove'];
+                const tempo = this.attributes['currentTempo'];
+                controller.playGroove.call(this, genre, Math.max(tempo - 10, constants.minTempo) );
+            }
+
+            // VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
+            //     this.emit(':responseReady');
+            // });            
         },
 
         'AudioRewindIntent' : function () { 
@@ -410,6 +389,42 @@ var controller = function () {
 
             this.response.audioPlayerPlay(playBehavior, podcast.url, token, null, offsetInMilliseconds);
             this.emit(':responseReady');
+        },
+        playGroove: function (genre, tempo) {
+            this.handler.state = constants.states.PLAY_MODE;
+            request
+               .get(`${constants.beatGeneratorAPI}/generate?tempo=${tempo}&groove=${genre}`)
+               .end((err, res) => {
+                    // TODO set tempo
+                    this.attributes['currentContent'] = 'groove';
+                    this.attributes['currentGroove'] = genre;
+                    this.attributes['currentTempo'] = tempo; // Default Tempo
+
+                    const confirmation = `Playing the ${genre} groove at tempo ${tempo}`
+                    this.response.speak(confirmation);
+                    this.response.audioPlayerPlay('REPLACE_ALL', res.body.url, 1, null, 0);
+                    this.emit(':responseReady');
+               });
+        },
+        playSong: function (song, tempo) {
+            this.handler.state = constants.states.PLAY_MODE;
+            request
+               .get(`${constants.beatGeneratorAPI}/songs/search?q=${song}${(tempo !== undefined) ? '&tempo=' + tempo : ''}`)
+               .end((err, res) => {
+                    // TODO set tempo
+                    const tempo = res.body.originalTempo;
+                    this.attributes['currentContent'] = 'song';
+                    this.attributes['currentSong'] = song;
+                    this.attributes['currentTempo'] = tempo;
+
+                    const confirmation = `Playing the song ${song} at tempo ${tempo}`
+                    this.response.speak(confirmation);
+                    this.response.audioPlayerPlay('REPLACE_ALL', res.body.url, 1, null, 0);
+                    this.emit(':responseReady');
+                    // VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
+                    //     this.emit(':responseReady');
+                    // });    
+               });
         },
         stop: function () {
             /*
