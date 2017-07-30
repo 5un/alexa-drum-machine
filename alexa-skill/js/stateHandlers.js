@@ -28,8 +28,11 @@ var commonHandlers = {
             this.response.speak(`Playing the ${groove} groove  at tempo ${tempo}`);
         }
         this.emit(':responseReady');
+    },
+    StartPracticeIntent: function() {
+        controller.playSong.call(this, 'with-a-little-help-from-my-friends', undefined);
+        this.emit(':responseReady');
     }
-
 };
 
 var stateHandlers = {
@@ -59,6 +62,9 @@ var stateHandlers = {
                 this.emit(':responseReady');
             });            
         },
+        
+        'StartPracticeIntent': commonHandlers.StartPracticeIntent, 
+
         'PlayAudioWithArtistIntent' : function () {
             /*
             if (!this.attributes['playOrder']) {
@@ -130,6 +136,8 @@ var stateHandlers = {
             });            
         },
 
+        'StartPracticeIntent': commonHandlers.StartPracticeIntent, 
+
         'VersionOriginalIntent' : function () { 
             this.response.speak('Original version');
             if(this.attributes['currentContent'] === 'song') {
@@ -180,7 +188,7 @@ var stateHandlers = {
                 const song = this.attributes['currentSong'];
                 let tempo = parseInt(this.attributes['currentTempo']);
                 controller.playSong.call(this, song, Math.max(tempo - 20, constants.minTempo) );
-            } else if(this.attributes['currentContent'] === 'groove')  {
+            } else if (this.attributes['currentContent'] === 'groove') {
                 const groove = this.attributes['currentGroove'];
                 let tempo = parseInt(this.attributes['currentTempo']);
                 controller.playGroove.call(this, groove, Math.max(tempo - 20, constants.minTempo) );
@@ -286,6 +294,9 @@ var stateHandlers = {
                 this.emit(':responseReady');
             });            
         },
+
+        'StartPracticeIntent': commonHandlers.StartPracticeIntent, 
+        
         'PlayAudioWithArtistIntent' : function () {
             var message = "PLAY MODE";
             this.response.speak(message);
@@ -411,8 +422,8 @@ var controller = function () {
         playGroove: function (genre, tempo) {
             this.handler.state = constants.states.PLAY_MODE;
             request
-               .get(`${constants.beatGeneratorAPI}/generate?tempo=${tempo}&groove=${genre}`)
-               .end((err, res) => {
+                .get(`${constants.beatGeneratorAPI}/generate?tempo=${tempo}&groove=${genre}`)
+                .end((err, res) => {
                     // TODO set tempo
                     this.attributes['currentContent'] = 'groove';
                     this.attributes['currentGroove'] = genre;
@@ -422,7 +433,7 @@ var controller = function () {
                     //this.response.speak(confirmation);
                     this.response.audioPlayerPlay('REPLACE_ALL', res.body.url, 1, null, 0);
                     this.emit(':responseReady');
-               });
+                });
         },
         playSong: function (song, tempo, originalVersion = false) {
             this.handler.state = constants.states.PLAY_MODE;
