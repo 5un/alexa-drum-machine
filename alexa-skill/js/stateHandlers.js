@@ -14,7 +14,7 @@ var commonHandlers = {
         controller.playGroove.call(this, genre, tempo);
     },
     PlayAudioWithSongNameIntent: function() {
-        const song = _.get(this, 'event.request.intent.slots.song.value');
+        const song = _.get(this, 'event.request.intent.slots.song.value', 'with-a-little-help-from-my-friends');
         controller.playSong.call(this, song, undefined);
     },
     CheckCurrentAudioIntent: function() {
