@@ -41,7 +41,7 @@ var stateHandlers = {
             controller.play.call(this);
         },
         'AMAZON.HelpIntent' : function () {
-            var message = 'Welcome to the AWS Podcast. You can say, play the audio, to begin the podcast.';
+            var message = 'What help do you need??';
             this.response.speak(message).listen(message);
             this.emit(':responseReady');
         },
@@ -101,11 +101,6 @@ var stateHandlers = {
         'AMAZON.StopIntent' : function () { controller.stop.call(this) },
         'AMAZON.CancelIntent' : function () { controller.stop.call(this) },
         'AMAZON.ResumeIntent' : function () { controller.play.call(this) },
-        'AMAZON.LoopOnIntent' : function () { controller.loopOn.call(this) },
-        'AMAZON.LoopOffIntent' : function () { controller.loopOff.call(this) },
-        'AMAZON.ShuffleOnIntent' : function () { controller.shuffleOn.call(this) },
-        'AMAZON.ShuffleOffIntent' : function () { controller.shuffleOff.call(this) },
-        'AMAZON.StartOverIntent' : function () { controller.startOver.call(this) },
         'AMAZON.HelpIntent' : function () {
             // This will called while audio is playing and a user says "ask <invocation_name> for help"
             var message = 'You are listening to the AWS Podcast. You can say, Next or Previous to navigate through the playlist. ' +
