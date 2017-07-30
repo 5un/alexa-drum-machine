@@ -100,7 +100,7 @@ export default ({ config, db }) => {
       const song = matches[0];
       const cacheKey = `${song.name}${tempo ? '@tempo' + tempo : ''}`;
       if (songCache[cacheKey]) {
-        const cachedSong = songCache[song.name];
+        const cachedSong = songCache[cacheKey];
         res.json(cachedSong);
       } else {
         const filename = uuidv1();
