@@ -48,10 +48,10 @@ var stateHandlers = {
             //  Change state to START_MODE
             this.handler.state = constants.states.START_MODE;
 
-            var message = 'OK. What song or backing track would you like to hear? You can tell me a music type, play a song, choose an artist or go to your playlist.';
+            var message = 'Welcome to jam buddy';
             var reprompt = 'You can say, Play a song by Ed Sheeran, to begin.';
 
-            this.response.speak(message).listen(reprompt);
+            this.response.speak(message);
 
             const intentName = _.get(this, 'event.request.intent.name', 'noIntent');
             const intentSlots = _.get(this, 'event.request.intent.slots', null);
@@ -74,7 +74,7 @@ var stateHandlers = {
             }
             */
             var message = 'OK. I found 20 songs by Ed Sheeran. Which song would you like to hear? The Shape of You, Castle on the Hill, I see Fire';
-            this.response.speak(message).listen("We recommend the song - the Shape of you");
+            this.response.speak(message);
             const intent = this.event.request.intent;
             VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
                 this.emit(':responseReady');
@@ -95,8 +95,8 @@ var stateHandlers = {
             });           
         },
         'Unhandled' : function () {
-            var message = 'Sorry, I could not understand. Please say, play the audio, to begin the audio.';
-            this.response.speak(message).listen(message);
+            var message = 'You have done a great job today. See You.';
+            this.response.speak(message);
             const intent = this.event.request.intent;
             VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
                 this.emit(':responseReady');
@@ -122,7 +122,7 @@ var stateHandlers = {
             var reprompt = 'You can say, play the audio, to begin.';
             
 
-            this.response.speak(message).listen(reprompt);
+            this.response.speak(message);
             const intentName = _.get(this, 'event.request.intent.name', 'noIntent');
             const intentSlots = _.get(this, 'event.request.intent.slots',  null);
             VoiceLabs.track(this.event.session, intentName, intentSlots, message, (error, response) => {
@@ -188,8 +188,8 @@ var stateHandlers = {
         },
 
         'AudioRewindIntent' : function () { 
-            var message = "Audio Rewind Intent";
-            this.response.speak(message).listen(message);
+            var message = "Rewinded";
+            this.response.speak(message);
             const intent = this.event.request.intent;
             VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
                 this.emit(':responseReady');
@@ -197,9 +197,9 @@ var stateHandlers = {
         },
         
         'AudioStopIntent' : function () {   
-            var message = "Audio Stop Intent"; 
+            var message = "Stopped"; 
             this.handler.state = constants.states.RESUME_DECISION_MODE;
-            this.response.speak(message).listen(message);
+            this.response.speak(message);
             const intent = this.event.request.intent;
             controller.stop.call(this)
             VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
@@ -208,9 +208,9 @@ var stateHandlers = {
         },
 
         'AMAZON.PauseIntent': function () {    
-            var message = "Audio Pause Intent";
+            var message = "Paused";
             this.handler.state = constants.states.RESUME_DECISION_MODE;
-            this.response.speak(message).listen(message);
+            this.response.speak(message);
             const intent = this.event.request.intent;
             VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
                 this.emit(':responseReady');
@@ -251,7 +251,7 @@ var stateHandlers = {
         },
 
         'Unhandled' : function () {
-            var message = 'Sorry, I could not understand. You can say, Next or Previous to navigate through the playlist.';
+            var message = 'You have done a great job today. See You.';
             this.response.speak(message).listen(message);
             const intent = this.event.request.intent;
             VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
@@ -274,7 +274,7 @@ var stateHandlers = {
 
             var message = 'Welcome back to Jam Buddy.';
             var reprompt = 'You can say, play the audio, to begin.';
-            this.response.speak(message).listen(reprompt);
+            this.response.speak(message);
             
             const intentName = _.get(this, 'event.request.intent.name', 'noIntent');
             const intentSlots = _.get(this, 'event.request.intent.slots', null);
@@ -284,7 +284,7 @@ var stateHandlers = {
         },
         'PlayAudioWithArtistIntent' : function () {
             var message = "PLAY MODE";
-            this.response.speak(message).listen(message);
+            this.response.speak(message);
             const intent = this.event.request.intent;
             VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
                 this.emit(':responseReady');
@@ -306,8 +306,8 @@ var stateHandlers = {
         },
 
         'Unhandled' : function () {
-            var message = 'Sorry, I could not understand. You can say, Next or Previous to navigate through the playlist.';
-            this.response.speak(message).listen(message);
+            var message = 'You have done a great job today. See You.';
+            this.response.speak(message);
             const intent = this.event.request.intent;
             VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
                 this.emit(':responseReady');
