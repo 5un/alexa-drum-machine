@@ -33,22 +33,28 @@ var commonHandlers = {
         const intent = this.event.request.intent;
         this.handler.state = constants.states.PLAY_MODE;
         request
-           .get(`${constants.beatGeneratorAPI}/songs/search?q=${song}`)
-           .end((err, res) => {
+            .get(`${constants.beatGeneratorAPI}/songs/search?q=${song}`)
+            .end((err, res) => {
                 // TODO set tempo
                 const tempo = res.body.originalTempo;
                 this.attributes['currentContent'] = 'song';
                 this.attributes['currentSong'] = song;
                 this.attributes['currentTempo'] = tempo;
 
-                const confirmation = `Playing the song ${song} at tempo ${tempo}`
+
+                if (song && tempo){
+                    const confirmation = `Playing the song ${song} at tempo ${tempo}`
+                } else {
+                    const confirmation = `Playing your song right now`
+                }
+                
                 this.response.speak(confirmation);
                 this.response.audioPlayerPlay('REPLACE_ALL', res.body.url, 1, null, 0);
                 this.emit(':responseReady');
                 // VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
                 //     this.emit(':responseReady');
                 // });    
-           });
+            });
     },
     CheckCurrentAudioIntent: function() {
         if(this.attributes['currentContent'] === 'song') {
@@ -87,7 +93,7 @@ var stateHandlers = {
             this.response.speak(message).listen(reprompt);
 
             const intentName = _.get(this, 'event.request.intent.name', 'noIntent');
-            const intentSlots = _.get(this, 'event.request.intent.slots', {});
+            const intentSlots = _.get(this, 'event.request.intent.slots', null);
             VoiceLabs.track(this.event.session, intentName, intentSlots, message, (error, response) => {
                 this.emit(':responseReady');
             });            
@@ -120,9 +126,10 @@ var stateHandlers = {
         'CheckCurrentAudioIntent': commonHandlers.CheckCurrentAudioIntent,
 
         'SessionEndedRequest' : function () {
+            var message = 'You have done a great job today. See You.';
             const intent = this.event.request.intent;
             VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
-                this.emit(':tell', 'You have done a great job today. See You.');
+                this.emit(':tell', message);
             })
         },
         'Unhandled' : function () {
@@ -148,20 +155,14 @@ var stateHandlers = {
              *      Ask user if he/she wants to resume from last position.
              *      Change state to RESUME_DECISION_MODE
              */
-            var message;
-            var reprompt;
-            if (this.attributes['playbackFinished']) {
-                message = 'Welcome back to Jam Buddy.';
-                reprompt = 'You can say, play the audio, to begin.';
-            } else {
-                message = 'You were listening to ' + audioData[this.attributes['playOrder'][this.attributes['index']]].title +
-                    ' Would you like to resume?';
-                reprompt = 'You can say yes to resume or no to play from the top.';
-            }
+
+            var message = 'Welcome back to Jam Buddy.';
+            var reprompt = 'You can say, play the audio, to begin.';
+            
 
             this.response.speak(message).listen(reprompt);
             const intentName = _.get(this, 'event.request.intent.name', 'noIntent');
-            const intentSlots = _.get(this, 'event.request.intent.slots', {});
+            const intentSlots = _.get(this, 'event.request.intent.slots',  null);
             VoiceLabs.track(this.event.session, intentName, intentSlots, message, (error, response) => {
                 this.emit(':responseReady');
             });            
@@ -256,9 +257,10 @@ var stateHandlers = {
         'CheckCurrentAudioIntent': commonHandlers.CheckCurrentAudioIntent,
 
         'SessionEndedRequest' : function () {
+            var message = 'You have done a great job today. See You.';
             const intent = this.event.request.intent;
             VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
-                this.emit(':tell', 'You have done a great job today. See You.');
+                this.emit(':tell', message);
             })
         },
 
@@ -283,20 +285,13 @@ var stateHandlers = {
              *      Ask user if he/she wants to resume from last position.
              *      Change state to RESUME_DECISION_MODE
              */
-            var message;
-            var reprompt;
-            if (this.attributes['playbackFinished']) {
-                message = 'Welcome to the AWS Podcast. You can say, play the audio to begin the podcast.';
-                reprompt = 'You can say, play the audio, to begin.';
-            } else {
-                message = 'You were listening to ' + audioData[this.attributes['playOrder'][this.attributes['index']]].title +
-                    ' Would you like to resume?';
-                reprompt = 'You can say yes to resume or no to play from the top.';
-            }
+
+            var message = 'Welcome back to Jam Buddy.';
+            var reprompt = 'You can say, play the audio, to begin.';
             this.response.speak(message).listen(reprompt);
             
             const intentName = _.get(this, 'event.request.intent.name', 'noIntent');
-            const intentSlots = _.get(this, 'event.request.intent.slots', {});
+            const intentSlots = _.get(this, 'event.request.intent.slots', null);
             VoiceLabs.track(this.event.session, intentName, intentSlots, message, (error, response) => {
                 this.emit(':responseReady');
             });            
@@ -316,9 +311,10 @@ var stateHandlers = {
         'CheckCurrentAudioIntent': commonHandlers.CheckCurrentAudioIntent,
 
         'SessionEndedRequest' : function () {
+            var message = 'You have done a great job today. See You.';
             const intent = this.event.request.intent;
             VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
-                this.emit(':tell', 'You have done a great job today. See You.');
+                this.emit(':tell', message);
             })
         },
         'Unhandled' : function () {
