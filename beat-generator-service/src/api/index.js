@@ -96,45 +96,46 @@ export default ({ config, db }) => {
     const query = req.query.q || '';
     const tempo  = req.query.tempo;
     // Find first match
-    const matches = _.filter(
+    let matches = _.filter(
                       _.map(
                         songDatabase.get(query), (item) => ({ confidence: item[0], name: item[1] })
                       ),
                       (item) => (item.confidence > 0.7)
                     );
-    if(matches.length > 0) {
-      const song = matches[0];
-      const cacheKey = `${song.name}${tempo ? '@tempo' + tempo : ''}`;
-      if (songCache[cacheKey]) {
-        const cachedSong = songCache[cacheKey];
-        res.json(cachedSong);
-      } else {
-        const filename = uuidv1();
-        fs.readFile(`./songs/${song.name}.mma`, 'utf8', function (err, mma) {
-          if (err) {
-            res.status(400).send({ error: { message: 'Cannot read song file' } });
-          } else {
-            const originalTempo = readMMATempo(mma);
-            song.originalTempo = originalTempo;
-            if (tempo) {
-              mma = overrideMMATempo(mma, tempo);
-            }
-            generateTrack(mma, filename, (err, gres) => {
-              if(err) {
-                res.status(400).send({ error: err });
-              } else {
-                songCache[cacheKey] = Object.assign(song, { url: gres.url });
-                res.json(Object.assign(gres, song));
-              }
-            });
-          }
-          
-        });
-      }
-      
-      
+
+    if (matches.length <= 0) {
+      matches = _.map(
+        songDatabase.get('with-a-little-help-from-my-friends'), (item) => ({ confidence: item[0], name: item[1] })
+      );
+    }
+
+    const song = matches[0];
+    const cacheKey = `${song.name}${tempo ? '@tempo' + tempo : ''}`;
+    if (songCache[cacheKey]) {
+      const cachedSong = songCache[cacheKey];
+      res.json(cachedSong);
     } else {
-      res.status(400).json({ error: { message: 'No match' } });
+      const filename = uuidv1();
+      fs.readFile(`./songs/${song.name}.mma`, 'utf8', function (err, mma) {
+        if (err) {
+          res.status(400).send({ error: { message: 'Cannot read song file' } });
+        } else {
+          const originalTempo = readMMATempo(mma);
+          song.originalTempo = originalTempo;
+          if (tempo) {
+            mma = overrideMMATempo(mma, tempo);
+          }
+          generateTrack(mma, filename, (err, gres) => {
+            if(err) {
+              res.status(400).send({ error: err });
+            } else {
+              songCache[cacheKey] = Object.assign(song, { url: gres.url });
+              res.json(Object.assign(gres, song));
+            }
+          });
+        }
+        
+      });
     }
   });
 
