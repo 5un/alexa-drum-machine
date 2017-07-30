@@ -88,10 +88,11 @@ var stateHandlers = {
 
         'SessionEndedRequest' : function () {
             var message = 'You have done a great job today. See You.';
-            const intent = this.event.request.intent;
-            VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
+            const intentName = _.get(this, 'event.request.intent.name', 'noIntent');
+            const intentSlots = _.get(this, 'event.request.intent.slots',  null);
+            VoiceLabs.track(this.event.session, intentName, intentSlots, message, (error, response) => {
                 this.emit(':tell', message);
-            })
+            });           
         },
         'Unhandled' : function () {
             var message = 'Sorry, I could not understand. Please say, play the audio, to begin the audio.';
@@ -241,10 +242,11 @@ var stateHandlers = {
 
         'SessionEndedRequest' : function () {
             var message = 'You have done a great job today. See You.';
-            const intent = this.event.request.intent;
-            VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
+            const intentName = _.get(this, 'event.request.intent.name', 'noIntent');
+            const intentSlots = _.get(this, 'event.request.intent.slots',  null);
+            VoiceLabs.track(this.event.session, intentName, intentSlots, message, (error, response) => {
                 this.emit(':tell', message);
-            })
+            });           
         },
 
         'Unhandled' : function () {
@@ -295,11 +297,13 @@ var stateHandlers = {
 
         'SessionEndedRequest' : function () {
             var message = 'You have done a great job today. See You.';
-            const intent = this.event.request.intent;
-            VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
+            const intentName = _.get(this, 'event.request.intent.name', 'noIntent');
+            const intentSlots = _.get(this, 'event.request.intent.slots',  null);
+            VoiceLabs.track(this.event.session, intentName, intentSlots, message, (error, response) => {
                 this.emit(':tell', message);
-            })
+            });            
         },
+
         'Unhandled' : function () {
             var message = 'Sorry, I could not understand. You can say, Next or Previous to navigate through the playlist.';
             this.response.speak(message).listen(message);
