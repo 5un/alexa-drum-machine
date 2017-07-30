@@ -20,5 +20,6 @@ module.exports = Object.freeze({
         START_MODE : '',
         PLAY_MODE : '_PLAY_MODE',
         RESUME_DECISION_MODE : '_RESUME_DECISION_MODE'
-    }
+    },
+    beatGeneratorAPI: 'http://54.148.7.89:8080/api'
 });

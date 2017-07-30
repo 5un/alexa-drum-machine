@@ -45,37 +45,39 @@ var audioEventHandlers = Alexa.CreateStateHandler(constants.states.PLAY_MODE, {
          * Storing details in dynamoDB using attributes.
          * Enqueuing the next audio file.
          */
-        if (this.attributes['enqueuedToken']) {
-            /*
-             * Since AudioPlayer.PlaybackNearlyFinished Directive are prone to be delivered multiple times during the
-             * same audio being played.
-             * If an audio file is already enqueued, exit without enqueuing again.
-             */
-            return this.context.succeed(true);
-        }
-        
-        var enqueueIndex = this.attributes['index'];
-        enqueueIndex +=1;
-        // Checking if  there are any items to be enqueued.
-        if (enqueueIndex === audioData.length) {
-            if (this.attributes['loop']) {
-                // Enqueueing the first item since looping is enabled.
-                enqueueIndex = 0;
-            } else {
-                // Nothing to enqueue since reached end of the list and looping is disabled.
-                return this.context.succeed(true);
-            }
-        }
-        // Setting attributes to indicate item is enqueued.
-        this.attributes['enqueuedToken'] = String(this.attributes['playOrder'][enqueueIndex]);
 
-        var enqueueToken = this.attributes['enqueuedToken'];
-        var playBehavior = 'ENQUEUE';
-        var podcast = audioData[this.attributes['playOrder'][enqueueIndex]];
-        var expectedPreviousToken = this.attributes['token'];
-        var offsetInMilliseconds = 0;
+        // if (this.attributes['enqueuedToken']) {
+        //     /*
+        //      * Since AudioPlayer.PlaybackNearlyFinished Directive are prone to be delivered multiple times during the
+        //      * same audio being played.
+        //      * If an audio file is already enqueued, exit without enqueuing again.
+        //      */
+        //     return this.context.succeed(true);
+        // }
         
-        this.response.audioPlayerPlay(playBehavior, podcast.url, enqueueToken, expectedPreviousToken, offsetInMilliseconds);
+        // var enqueueIndex = this.attributes['index'];
+        // enqueueIndex +=1;
+        // // Checking if  there are any items to be enqueued.
+        // if (enqueueIndex === audioData.length) {
+        //     if (this.attributes['loop']) {
+        //         // Enqueueing the first item since looping is enabled.
+        //         enqueueIndex = 0;
+        //     } else {
+        //         // Nothing to enqueue since reached end of the list and looping is disabled.
+        //         return this.context.succeed(true);
+        //     }
+        // }
+        // // Setting attributes to indicate item is enqueued.
+        // this.attributes['enqueuedToken'] = String(this.attributes['playOrder'][enqueueIndex]);
+
+        // var enqueueToken = this.attributes['enqueuedToken'];
+        // var playBehavior = 'ENQUEUE';
+        // var podcast = audioData[this.attributes['playOrder'][enqueueIndex]];
+        // var expectedPreviousToken = this.attributes['token'];
+        // var offsetInMilliseconds = 0;
+        
+        // this.response.audioPlayerPlay(playBehavior, podcast.url, enqueueToken, expectedPreviousToken, offsetInMilliseconds);
+        
         this.emit(':responseReady');
     },
     'PlaybackFailed' : function () {

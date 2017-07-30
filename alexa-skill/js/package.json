@@ -15,7 +15,8 @@
   "license": "See license in ../LICENSE.txt",
   "dependencies": {
     "alexa-sdk": "^1.0.4",
-    "voicelabs": "^1.0.1"
+    "voicelabs": "^1.0.1",
+    "superagent": "^3.5.2"
   },
   "repository": {
     "type": "git",
