@@ -7,7 +7,6 @@ import { generateGroove } from '../lib/mma';
 import config from '../config.json';
 import secrets from '../../secrets/aws.json';
 
-var sys = require('sys')
 var exec = require('child_process').exec;
 import AWS from 'aws-sdk';
 var accessKeyId =  process.env.AWS_ACCESS_KEY || secrets.AWS_ACCESS_KEY;
@@ -33,17 +32,17 @@ export default ({ config, db }) => {
 
   api.get('/generate', (req, res) => {
     const filename = uuidv1();
-    const mma = generateGroove({ tempo: 110, groove: '8beat'});
+    const tempo = req.query.tempo || 100;
+    const groove = req.query.groove || 'pop';
+    const mma = generateGroove({ tempo: tempo, groove: groove });
     fs.writeFile(`./temp/${filename}.mma`, mma, function(err) {
       if(err) {
         res.json({ error: { message: 'Cannot generate MMA file' } });
       } else {
-        let child;
-        const script = `
-          mma ./temp/${filename}.mma && 
+        const script = `mma ./temp/${filename}.mma &&
           fluidsynth ./soundfonts/FluidR3_GM.sf2 ./temp/${filename}.mid -F ./temp/${filename}.wav &&
-          lame --scale 5 ./temp/${filename}.wav ./temp/${filename}.mp3
-        `
+          lame --scale 5 ./temp/${filename}.wav ./temp/${filename}.mp3`
+        let child;
         child = exec(script, function (error, stdout, stderr) {
           if (error !== null) {
             res.json({ error: { message: `Cannot execute command ${error}` } });
@@ -57,13 +56,11 @@ export default ({ config, db }) => {
               };
 
               s3.putObject(params, function (perr, pres) {
-                  if (perr) {
-                    res.json({ error: { message: 'Cannot upload file', s3Error: perr } });
-                    // console.log("Error uploading data: ", perr);
-                  } else {
-                    res.json({ url: `https://s3.amazonaws.com/${config.s3Bucket}/${config.s3Path}/${filename}.mp3` });
-                    // console.log("Successfully uploaded data to myBucket/myKey");
-                  }
+                if (perr) {
+                  res.json({ error: { message: 'Cannot upload file', s3Error: perr } });
+                } else {
+                  res.json({ url: `https://s3.amazonaws.com/${config.s3Bucket}/${config.s3Path}/${filename}.mp3` });
+                }
               });
           });
                     

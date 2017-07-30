@@ -36,25 +36,5 @@ export function generateGroove(opts) {
   18 z
   19 z
   20 z
-  21 z
-  22 z
-  23 z
-  24 z
-  25 z
-  26 z
-  27 z
-  28 z
-  29 z
-  30 z
-  31 z
-  32 z
-  33 z
-  34 z
-  35 z
-  36 z
-  37 z
-  38 z
-  39 z
-  40 z
   `;
 }
