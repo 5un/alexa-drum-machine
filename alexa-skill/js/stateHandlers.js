@@ -3,6 +3,7 @@
 var Alexa = require('alexa-sdk');
 var audioData = require('./audioAssets');
 var constants = require('./constants');
+var VoiceLabs = require("voicelabs")('aaa9caf0-7505-11a7-11ce-02f814b60257');
 
 var stateHandlers = {
     startModeIntentHandlers : Alexa.CreateStateHandler(constants.states.START_MODE, {
@@ -24,7 +25,11 @@ var stateHandlers = {
             var reprompt = 'You can say, Play a song by Ed Sheeran, to begin.';
 
             this.response.speak(message).listen(reprompt);
-            this.emit(':responseReady');
+
+            const intent = this.event.request.intent;
+            VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
+                this.emit(':responseReady');
+            });            
         },
         'PlayAudioWithArtistIntent' : function () {
             /*
@@ -40,8 +45,12 @@ var stateHandlers = {
                 this.handler.state = constants.states.START_MODE;
             }
             */
-            this.response.speak('OK. I found 20 songs by Ed Sheeran. Which song would you like to hear? The Shape of You, Castle on the Hill, I see Fire').listen("We recommend the song - the Shape of you");
-            this.emit(':responseReady');
+            var message = 'OK. I found 20 songs by Ed Sheeran. Which song would you like to hear? The Shape of You, Castle on the Hill, I see Fire';
+            this.response.speak(message).listen("We recommend the song - the Shape of you");
+            const intent = this.event.request.intent;
+            VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
+                this.emit(':responseReady');
+            });            
         },
         'PlayAudioWithSongNameIntent' : function () {
             /*
@@ -57,9 +66,13 @@ var stateHandlers = {
                 this.handler.state = constants.states.START_MODE;
             }
             */
+            var message = message;
             this.handler.state = constants.states.PLAY_MODE;
-            this.response.speak("Play Audio With Song Name Intent").listen("Play Audio With Song Name Intent");
-            this.emit(':responseReady');
+            this.response.speak(message).listen(message);
+            const intent = this.event.request.intent;
+            VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
+                this.emit(':responseReady');
+            });            
         },
         
         'SessionEndedRequest' : function () {
@@ -68,7 +81,10 @@ var stateHandlers = {
         'Unhandled' : function () {
             var message = 'Sorry, I could not understand. Please say, play the audio, to begin the audio.';
             this.response.speak(message).listen(message);
-            this.emit(':responseReady');
+            const intent = this.event.request.intent;
+            VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
+                this.emit(':responseReady');
+            });            
         }
     }),
     playModeIntentHandlers : Alexa.CreateStateHandler(constants.states.PLAY_MODE, {
@@ -88,7 +104,7 @@ var stateHandlers = {
             var message;
             var reprompt;
             if (this.attributes['playbackFinished']) {
-                message = 'Welcome to the AWS Podcast. You can say, play the audio to begin the podcast.';
+                message = 'Welcome back to Jam Buddy.';
                 reprompt = 'You can say, play the audio, to begin.';
             } else {
                 message = 'You were listening to ' + audioData[this.attributes['playOrder'][this.attributes['index']]].title +
@@ -97,41 +113,72 @@ var stateHandlers = {
             }
 
             this.response.speak(message).listen(reprompt);
-            this.emit(':responseReady');
+            const intent = this.event.request.intent;
+            VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
+                this.emit(':responseReady');
+            });            
         },
 
         'VersionOriginalIntent' : function () { 
-            this.response.speak("OK. Playing the Original version").listen("OK. Playing the Original version");
-            this.emit(':responseReady');
+            var message = "OK. Playing the Original version";
+            this.response.speak(message).listen(message);
+            const intent = this.event.request.intent;
+            VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
+                this.emit(':responseReady');
+            });            
         },
         'VersionBackingTrackIntent' : function () { 
-            this.response.speak("Version Backing Track Intent").listen("Version Backing Track Intent");
-            this.emit(':responseReady');
+            var message = "Version Backing Track Intent";
+            this.response.speak(message).listen(message);
+            const intent = this.event.request.intent;
+            VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
+                this.emit(':responseReady');
+            });            
         },
         'VariationFasterIntent' : function () { 
-            this.response.speak("Variation Faster Intent").listen("Variation Faster Intent");
-            this.emit(':responseReady');
+            var message = "Variation Faster Intent";
+            this.response.speak(message).listen(message);
+            const intent = this.event.request.intent;
+            VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
+                this.emit(':responseReady');
+            });            
         },
         'VariationSlowerIntent' : function () { 
-            this.response.speak("Variation Slower Intent").listen("Variation Slower Intent");
-            this.emit(':responseReady');
+            var message = "Variation Slower Intent";
+            this.response.speak(message).listen(message);
+            const intent = this.event.request.intent;
+            VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
+                this.emit(':responseReady');
+            });            
         },
 
         'AudioRewindIntent' : function () { 
-            this.response.speak("Audio Rewind Intent").listen("Audio Rewind Intent");
-            this.emit(':responseReady');
+            var message = "Audio Rewind Intent";
+            this.response.speak(message).listen(message);
+            const intent = this.event.request.intent;
+            VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
+                this.emit(':responseReady');
+            });            
         },
         
-        'AudioStopIntent' : function () {    
+        'AudioStopIntent' : function () {   
+            var message = "Audio Stop Intent"; 
             this.handler.state = constants.states.RESUME_DECISION_MODE;
-            this.response.speak("Audio Stop Intent").listen("Audio Stop Intent");
-            this.emit(':responseReady');
+            this.response.speak(message).listen(message);
+            const intent = this.event.request.intent;
+            VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
+                this.emit(':responseReady');
+            });            
         },
 
         'AMAZON.PauseIntent': function () {    
+            var message = "Audio Pause Intent";
             this.handler.state = constants.states.RESUME_DECISION_MODE;
-            this.response.speak("Audio Pause Intent").listen("Audio Pause Intent");
-            this.emit(':responseReady');
+            this.response.speak(message).listen(message);
+            const intent = this.event.request.intent;
+            VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
+                this.emit(':responseReady');
+            });            
         },
         /*
         'PlayAudio' : function () { controller.play.call(this) },
@@ -158,7 +205,10 @@ var stateHandlers = {
         'Unhandled' : function () {
             var message = 'Sorry, I could not understand. You can say, Next or Previous to navigate through the playlist.';
             this.response.speak(message).listen(message);
-            this.emit(':responseReady');
+            const intent = this.event.request.intent;
+            VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
+                this.emit(':responseReady');
+            })
         }
     }),
 
@@ -184,16 +234,27 @@ var stateHandlers = {
                 reprompt = 'You can say yes to resume or no to play from the top.';
             }
             this.response.speak(message).listen(reprompt);
-            this.emit(':responseReady');
+            const intent = this.event.request.intent;
+            VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
+                this.emit(':responseReady');
+            });            
         },
         'PlayAudioWithArtistIntent' : function () {
-            this.response.speak("PLAY MODE").listen("PLAY MODE");
-            this.emit(':responseReady');
+            var message = "PLAY MODE";
+            this.response.speak(message).listen(message);
+            const intent = this.event.request.intent;
+            VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
+                this.emit(':responseReady');
+            });            
         },
         'PlayAudioWithSongNameIntent' : function () {
+            var message = "Play Audio With Song Name Intent";
             this.handler.state = constants.states.PLAY_MODE;
-            this.response.speak("Play Audio With Song Name Intent").listen("Play Audio With Song Name Intent");
-            this.emit(':responseReady');
+            this.response.speak(message).listen(message);
+            const intent = this.event.request.intent;
+            VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
+                this.emit(':responseReady');
+            });            
         },        
         'SessionEndedRequest' : function () {
             // No session ended logic
@@ -201,7 +262,10 @@ var stateHandlers = {
         'Unhandled' : function () {
             var message = 'Sorry, I could not understand. You can say, Next or Previous to navigate through the playlist.';
             this.response.speak(message).listen(message);
-            this.emit(':responseReady');
+            const intent = this.event.request.intent;
+            VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
+                this.emit(':responseReady');
+            });            
         },
 
     }),

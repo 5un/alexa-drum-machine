@@ -49,9 +49,13 @@
       ]
     },
     {
-      "name": "EndSessionIntent",
+      "name": "AudioStopIntent",
       "samples": [
-        "I am done for today"
+        "stop",
+        "please stop",
+        "just stop",
+        "stop it",
+        "stop the music please"
       ],
       "slots": []
     },
@@ -68,6 +72,22 @@
         "Play The Shape of you"
       ],
       "slots": []
+    },
+    {
+      "name": "PlayGrooveWithGenre",
+      "samples": [
+        "Play a {genre} groove",
+        "Play a {genre} beat"
+      ],
+      "slots": [
+        {
+          "name": "genre",
+          "type": "GENRE",
+          "samples": [
+            "{genre}"
+          ]
+        }
+      ]
     },
     {
       "name": "VariationFasterIntent",
@@ -100,6 +120,39 @@
     }
   ],
   "types": [
+    {
+      "name": "GENRE",
+      "values": [
+        {
+          "id": null,
+          "name": {
+            "value": "pop",
+            "synonyms": []
+          }
+        },
+        {
+          "id": null,
+          "name": {
+            "value": "swing",
+            "synonyms": []
+          }
+        },
+        {
+          "id": null,
+          "name": {
+            "value": "ska",
+            "synonyms": []
+          }
+        },
+        {
+          "id": null,
+          "name": {
+            "value": "techno",
+            "synonyms": []
+          }
+        }
+      ]
+    },
     {
       "name": "MUSICALBUM",
       "values": [
@@ -2365,5 +2418,39 @@
         }
       ]
     }
-  ]
+  ],
+  "prompts": [
+    {
+      "id": "Elicit.Intent-PlayGrooveWithGenre.IntentSlot-genre",
+      "promptVersion": "1.0",
+      "definitionVersion": "1.0",
+      "variations": [
+        {
+          "type": "PlainText",
+          "value": "In what genre"
+        }
+      ]
+    }
+  ],
+  "dialog": {
+    "version": "1.0",
+    "intents": [
+      {
+        "name": "PlayGrooveWithGenre",
+        "confirmationRequired": false,
+        "prompts": {},
+        "slots": [
+          {
+            "name": "genre",
+            "type": "GENRE",
+            "elicitationRequired": true,
+            "confirmationRequired": false,
+            "prompts": {
+              "elicit": "Elicit.Intent-PlayGrooveWithGenre.IntentSlot-genre"
+            }
+          }
+        ]
+      }
+    ]
+  }
 }
