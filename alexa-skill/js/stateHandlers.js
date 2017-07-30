@@ -17,7 +17,23 @@ var commonHandlers = {
                 this.response.audioPlayerPlay('REPLACE_ALL', res.body.url, 1, null, 0);
                 this.emit(':responseReady');
            });
+    },
+    PlayAudioWithSongNameIntent: function() {
+        var message = 'Play Audio With Song Name Intent';
+        const song = _.get(this, 'event.request.intent.slots.song.value');
+        const intent = this.event.request.intent;
+        this.handler.state = constants.states.PLAY_MODE;
+        request
+           .get(`${constants.beatGeneratorAPI}/songs/search?q=${song}`)
+           .end((err, res) => {
+                this.response.audioPlayerPlay('REPLACE_ALL', res.body.url, 1, null, 0);
+                this.emit(':responseReady');
+                // VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
+                //     this.emit(':responseReady');
+                // });    
+           });
     }
+
 };
 
 var stateHandlers = {
@@ -41,8 +57,9 @@ var stateHandlers = {
 
             this.response.speak(message).listen(reprompt);
 
-            const intent = this.event.request.intent;
-            VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
+            const intentName = _.get(this, 'event.request.intent.name', 'noIntent');
+            const intentSlots = _.get(this, 'event.request.intent.slots', {});
+            VoiceLabs.track(this.event.session, intentName, intentSlots, message, (error, response) => {
                 this.emit(':responseReady');
             });            
         },
@@ -67,33 +84,7 @@ var stateHandlers = {
                 this.emit(':responseReady');
             });            
         },
-        'PlayAudioWithSongNameIntent' : function () {
-            /*
-            if (!this.attributes['playOrder']) {
-                // Initialize Attributes if undefined.
-                this.attributes['playOrder'] = Array.apply(null, {length: audioData.length}).map(Number.call, Number);
-                this.attributes['index'] = 0;
-                this.attributes['offsetInMilliseconds'] = 0;
-                this.attributes['loop'] = true;
-                this.attributes['shuffle'] = false;
-                this.attributes['playbackIndexChanged'] = true;
-                //  Change state to START_MODE
-                this.handler.state = constants.states.START_MODE;
-            }
-            */
-            var message = message;
-            this.handler.state = constants.states.PLAY_MODE;
-            this.response.speak(message).listen(message);
-            const intent = this.event.request.intent;
-            VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
-                this.emit(':responseReady');
-            });            
-
-            // const song = _.get(this, 'event.request.intent.slots.song.value');
-            // this.handler.state = constants.states.PLAY_MODE;
-            // this.response.speak("Play Audio With Song Name Intent " + song).listen("Play Audio With Song Name Intent");
-            // this.emit(':responseReady');
-        },
+        'PlayAudioWithSongNameIntent' : commonHandlers.PlayAudioWithSongNameIntent,
 
         'PlayGrooveWithGenreIntent': commonHandlers.PlayGrooveWithGenreIntent,
 
@@ -135,8 +126,9 @@ var stateHandlers = {
             }
 
             this.response.speak(message).listen(reprompt);
-            const intent = this.event.request.intent;
-            VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
+            const intentName = _.get(this, 'event.request.intent.name', 'noIntent');
+            const intentSlots = _.get(this, 'event.request.intent.slots', {});
+            VoiceLabs.track(this.event.session, intentName, intentSlots, message, (error, response) => {
                 this.emit(':responseReady');
             });            
         },
@@ -221,6 +213,8 @@ var stateHandlers = {
         },
         */
 
+        'PlayAudioWithSongNameIntent' : commonHandlers.PlayAudioWithSongNameIntent,
+
         'PlayGrooveWithGenreIntent': commonHandlers.PlayGrooveWithGenreIntent,
 
         'SessionEndedRequest' : function () {
@@ -259,8 +253,10 @@ var stateHandlers = {
                 reprompt = 'You can say yes to resume or no to play from the top.';
             }
             this.response.speak(message).listen(reprompt);
-            const intent = this.event.request.intent;
-            VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
+            
+            const intentName = _.get(this, 'event.request.intent.name', 'noIntent');
+            const intentSlots = _.get(this, 'event.request.intent.slots', {});
+            VoiceLabs.track(this.event.session, intentName, intentSlots, message, (error, response) => {
                 this.emit(':responseReady');
             });            
         },
@@ -272,21 +268,7 @@ var stateHandlers = {
                 this.emit(':responseReady');
             });            
         },
-        'PlayAudioWithSongNameIntent' : function () {
-            var message = "Play Audio With Song Name Intent";
-            this.handler.state = constants.states.PLAY_MODE;
-            this.response.speak(message).listen(message);
-            const intent = this.event.request.intent;
-            VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
-                this.emit(':responseReady');
-            });   
-
-            // const song = _.get(this, 'event.request.intent.slots.song.value');
-
-            // this.handler.state = constants.states.PLAY_MODE;
-            // this.response.speak("Play Audio With Song Name Intent " + song).listen("Play Audio With Song Name Intent");
-            // this.emit(':responseReady');           
-        }, 
+        'PlayAudioWithSongNameIntent' : commonHandlers.PlayAudioWithSongNameIntent,
         
         'PlayGrooveWithGenreIntent': commonHandlers.PlayGrooveWithGenreIntent,
 
