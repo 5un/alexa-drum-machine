@@ -1,3 +1,7 @@
+export function overrideMMATempo(str, newtempo) {
+  return str.replace(/^Tempo.*$/m, `Tempo ${newtempo}`);
+}
+
 export function generateGroove(opts) {
   return `
   Tempo ${opts.tempo || 120}

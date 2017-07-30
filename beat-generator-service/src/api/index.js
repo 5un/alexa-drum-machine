@@ -4,7 +4,7 @@ import facets from './facets';
 import fs from 'fs';
 import uuidv1 from 'uuid/v1';
 import FuzzySet from 'fuzzyset.js'
-import { generateGroove } from '../lib/mma';
+import { generateGroove, overrideMMATempo } from '../lib/mma';
 import config from '../config.json';
 import secrets from '../../secrets/aws.json';
 import songList from '../lib/songs';
@@ -88,6 +88,7 @@ export default ({ config, db }) => {
 
   api.get('/songs/search', (req, res) => {
     const query = req.query.q || '';
+    const tempo  = req.query.tempo;
     // Find first match
     const matches = _.filter(
                       _.map(
@@ -97,21 +98,32 @@ export default ({ config, db }) => {
                     );
     if(matches.length > 0) {
       const song = matches[0];
-      const filename = uuidv1();
-      fs.readFile(`./songs/${song.name}.mma`, function (err, mma) {
-        if (err) {
-          res.status(400).send({ error: { message: 'Cannot read song file' } });
-        } else {
-          generateTrack(mma, filename, (err, gres) => {
-            if(err) {
-              res.status(400).send({ error: err });
-            } else {
-              res.json(Object.assign(gres, song));
+      const cacheKey = `${song.name}${tempo ? '@tempo' + tempo : ''}`;
+      if (songCache[cacheKey]) {
+        const cachedSong = songCache[song.name];
+        res.json(cachedSong);
+      } else {
+        const filename = uuidv1();
+        fs.readFile(`./songs/${song.name}.mma`, 'utf8', function (err, mma) {
+          if (err) {
+            res.status(400).send({ error: { message: 'Cannot read song file' } });
+          } else {
+            if (tempo) {
+              mma = overrideMMATempo(mma, tempo);
             }
-          });
-        }
-        
-      });
+            generateTrack(mma, filename, (err, gres) => {
+              if(err) {
+                res.status(400).send({ error: err });
+              } else {
+                songCache[cacheKey] = Object.assign(song, { url: gres.url });
+                res.json(Object.assign(gres, song));
+              }
+            });
+          }
+          
+        });
+      }
+      
       
     } else {
       res.status(400).json({ error: { message: 'No match' } });
