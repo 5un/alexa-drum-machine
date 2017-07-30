@@ -129,7 +129,7 @@ export default ({ config, db }) => {
             if(err) {
               res.status(400).send({ error: err });
             } else {
-              songCache[cacheKey] = Object.assign(song, { url: gres.url });
+              songCache[cacheKey] = Object.assign(song, { url: gres.url, originalURL: config.defaultOriginalTrackURL });
               res.json(Object.assign(gres, song));
             }
           });

@@ -3,6 +3,6 @@
 	"bodyLimit": "100kb",
 	"corsHeaders": ["Link"],
   "s3Bucket": "soravis",
-  "s3Path": "alexa-public"
-
+  "s3Path": "alexa-public",
+  "defaultOriginalTrackURL": "https://s3.amazonaws.com/soravis/alexa-public/with-a-little-help-from-my-friends.mp3"
 }
