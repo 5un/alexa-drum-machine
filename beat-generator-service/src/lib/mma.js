@@ -1,5 +1,13 @@
-export function overrideMMATempo(str, newtempo) {
-  return str.replace(/^Tempo.*$/m, `Tempo ${newtempo}`);
+export function overrideMMATempo(mma, newtempo) {
+  return mma.replace(/^Tempo.*$/m, `Tempo ${newtempo}`);
+}
+
+export function readMMATempo(mma) {
+  const matches = mma.match(/^Tempo.*$/m);
+  if(matches) {
+    return (matches[0].split(' '))[1];
+  }
+  return null;
 }
 
 export function generateGroove(opts) {

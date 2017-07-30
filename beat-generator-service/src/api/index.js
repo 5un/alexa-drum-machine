@@ -4,15 +4,17 @@ import facets from './facets';
 import fs from 'fs';
 import uuidv1 from 'uuid/v1';
 import FuzzySet from 'fuzzyset.js'
-import { generateGroove, overrideMMATempo } from '../lib/mma';
+import { generateGroove, overrideMMATempo, readMMATempo } from '../lib/mma';
 import config from '../config.json';
 import secrets from '../../secrets/aws.json';
 import songList from '../lib/songs';
+import artists from '../lib/artists';
 var exec = require('child_process').exec;
 import AWS from 'aws-sdk';
 import _ from 'lodash';
 
 const songDatabase = FuzzySet(songList);
+const artistDatabase = FuzzySet(_.map(artists, (a) => (a.name) ));
 const songCache = {};
 
 var accessKeyId =  process.env.AWS_ACCESS_KEY || secrets.AWS_ACCESS_KEY;
@@ -86,6 +88,10 @@ export default ({ config, db }) => {
     });
   });
 
+  api.get('/artists/search', (req, res) => {
+    res.json({});
+  });
+
   api.get('/songs/search', (req, res) => {
     const query = req.query.q || '';
     const tempo  = req.query.tempo;
@@ -108,6 +114,8 @@ export default ({ config, db }) => {
           if (err) {
             res.status(400).send({ error: { message: 'Cannot read song file' } });
           } else {
+            const originalTempo = readMMATempo(mma);
+            song.originalTempo = originalTempo;
             if (tempo) {
               mma = overrideMMATempo(mma, tempo);
             }
