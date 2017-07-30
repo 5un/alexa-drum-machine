@@ -20,13 +20,14 @@ var stateHandlers = {
             //  Change state to START_MODE
             this.handler.state = constants.states.START_MODE;
 
-            var message = 'Welcome to the AWS Podcast. You can say, play the audio to begin the podcast.';
-            var reprompt = 'You can say, play the audio, to begin.';
+            var message = 'OK. What song or backing track would you like to hear? You can tell me a music type, play a song, choose an artist or go to your playlist.';
+            var reprompt = 'You can say, Play a song by Ed Sheeran, to begin.';
 
             this.response.speak(message).listen(reprompt);
             this.emit(':responseReady');
         },
-        'PlayAudio' : function () {
+        'PlayAudioWithArtistIntent' : function () {
+            /*
             if (!this.attributes['playOrder']) {
                 // Initialize Attributes if undefined.
                 this.attributes['playOrder'] = Array.apply(null, {length: audioData.length}).map(Number.call, Number);
@@ -38,26 +39,35 @@ var stateHandlers = {
                 //  Change state to START_MODE
                 this.handler.state = constants.states.START_MODE;
             }
-            controller.play.call(this);
-        },
-        'AMAZON.HelpIntent' : function () {
-            var message = 'What help do you need??';
-            this.response.speak(message).listen(message);
+            */
+            this.response.speak("PLAY MODE").listen("PLAY MODE");
             this.emit(':responseReady');
         },
-        'AMAZON.StopIntent' : function () {
-            var message = 'Good bye.';
-            this.response.speak(message);
+        'PlayAudioWithSongNameIntent' : function () {
+            /*
+            if (!this.attributes['playOrder']) {
+                // Initialize Attributes if undefined.
+                this.attributes['playOrder'] = Array.apply(null, {length: audioData.length}).map(Number.call, Number);
+                this.attributes['index'] = 0;
+                this.attributes['offsetInMilliseconds'] = 0;
+                this.attributes['loop'] = true;
+                this.attributes['shuffle'] = false;
+                this.attributes['playbackIndexChanged'] = true;
+                //  Change state to START_MODE
+                this.handler.state = constants.states.START_MODE;
+            }
+            */
+            this.handler.state = constants.states.PLAY_MODE;
+            this.response.speak("Play Audio With Song Name Intent").listen("Play Audio With Song Name Intent");
             this.emit(':responseReady');
         },
-        'AMAZON.CancelIntent' : function () {
-            var message = 'Good bye.';
-            this.response.speak(message);
-            this.emit(':responseReady');
-        },
+        
+        'EndSessionIntent' : function () { controller.play.call(this) },
+        /*
         'SessionEndedRequest' : function () {
             // No session ended logic
         },
+        */
         'Unhandled' : function () {
             var message = 'Sorry, I could not understand. Please say, play the audio, to begin the audio.';
             this.response.speak(message).listen(message);
@@ -94,13 +104,43 @@ var stateHandlers = {
             this.response.speak(message).listen(reprompt);
             this.emit(':responseReady');
         },
+
+        'VersionOriginalIntent' : function () { 
+            this.response.speak("Version Original Intent").listen("Version Original Intent");
+            this.emit(':responseReady');
+        },
+        'VersionBackingTrackIntent' : function () { 
+            this.response.speak("Version Backing Track Intent").listen("Version Backing Track Intent");
+            this.emit(':responseReady');
+        },
+        'VariationFasterIntent' : function () { 
+            this.response.speak("Variation Faster Intent").listen("Variation Faster Intent");
+            this.emit(':responseReady');
+        },
+        'VariationSlowerIntent' : function () { 
+            this.response.speak("Variation Slower Intent").listen("Variation Slower Intent");
+            this.emit(':responseReady');
+        },
+
+        'AudioRewindIntent' : function () { 
+            this.response.speak("Audio Rewind Intent").listen("Audio Rewind Intent");
+            this.emit(':responseReady');
+        },
+        'EndSessionIntent' : function () { 
+            this.response.speak("EndSession Intent").listen("EndSession Intent");
+            this.handler.state = constants.states.START_MODE;
+            this.emit(':responseReady');
+        },
+        /*
         'PlayAudio' : function () { controller.play.call(this) },
+        
         'AMAZON.NextIntent' : function () { controller.playNext.call(this) },
         'AMAZON.PreviousIntent' : function () { controller.playPrevious.call(this) },
         'AMAZON.PauseIntent' : function () { controller.stop.call(this) },
         'AMAZON.StopIntent' : function () { controller.stop.call(this) },
         'AMAZON.CancelIntent' : function () { controller.stop.call(this) },
         'AMAZON.ResumeIntent' : function () { controller.play.call(this) },
+        
         'AMAZON.HelpIntent' : function () {
             // This will called while audio is playing and a user says "ask <invocation_name> for help"
             var message = 'You are listening to the AWS Podcast. You can say, Next or Previous to navigate through the playlist. ' +
@@ -108,19 +148,23 @@ var stateHandlers = {
             this.response.speak(message).listen(message);
             this.emit(':responseReady');
         },
+        
         'SessionEndedRequest' : function () {
             // No session ended logic
         },
+        */
         'Unhandled' : function () {
             var message = 'Sorry, I could not understand. You can say, Next or Previous to navigate through the playlist.';
             this.response.speak(message).listen(message);
             this.emit(':responseReady');
         }
     }),
+
+    /*
     remoteControllerHandlers : Alexa.CreateStateHandler(constants.states.PLAY_MODE, {
         /*
          *  All Requests are received using a Remote Control. Calling corresponding handlers for each of them.
-         */
+         
         'PlayCommandIssued' : function () { controller.play.call(this) },
         'PauseCommandIssued' : function () { controller.stop.call(this) },
         'NextCommandIssued' : function () { controller.playNext.call(this) },
@@ -129,7 +173,7 @@ var stateHandlers = {
     resumeDecisionModeIntentHandlers : Alexa.CreateStateHandler(constants.states.RESUME_DECISION_MODE, {
         /*
          *  All Intent Handlers for state : RESUME_DECISION_MODE
-         */
+         
         'LaunchRequest' : function () {
             var message = 'You were listening to ' + audioData[this.attributes['playOrder'][this.attributes['index']]].title +
                 ' Would you like to resume?';
@@ -165,6 +209,7 @@ var stateHandlers = {
             this.emit(':responseReady');
         }
     })
+    */
 };
 
 module.exports = stateHandlers;
