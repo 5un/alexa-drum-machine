@@ -13,7 +13,7 @@ exports.handler = function(event, context, callback){
         stateHandlers.startModeIntentHandlers,
         stateHandlers.playModeIntentHandlers,
         //stateHandlers.remoteControllerHandlers,
-        //stateHandlers.resumeDecisionModeIntentHandlers,
+        stateHandlers.resumeDecisionModeIntentHandlers,
         audioEventHandlers
     );
     alexa.execute();

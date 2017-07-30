@@ -40,7 +40,7 @@ var stateHandlers = {
                 this.handler.state = constants.states.START_MODE;
             }
             */
-            this.response.speak("PLAY MODE").listen("PLAY MODE");
+            this.response.speak('OK. I found 20 songs by Ed Sheeran. Which song would you like to hear? The Shape of You, Castle on the Hill, I see Fire').listen("We recommend the song - the Shape of you");
             this.emit(':responseReady');
         },
         'PlayAudioWithSongNameIntent' : function () {
@@ -62,12 +62,9 @@ var stateHandlers = {
             this.emit(':responseReady');
         },
         
-        'EndSessionIntent' : function () { controller.play.call(this) },
-        /*
         'SessionEndedRequest' : function () {
             // No session ended logic
         },
-        */
         'Unhandled' : function () {
             var message = 'Sorry, I could not understand. Please say, play the audio, to begin the audio.';
             this.response.speak(message).listen(message);
@@ -91,11 +88,9 @@ var stateHandlers = {
             var message;
             var reprompt;
             if (this.attributes['playbackFinished']) {
-                this.handler.state = constants.states.START_MODE;
                 message = 'Welcome to the AWS Podcast. You can say, play the audio to begin the podcast.';
                 reprompt = 'You can say, play the audio, to begin.';
             } else {
-                this.handler.state = constants.states.RESUME_DECISION_MODE;
                 message = 'You were listening to ' + audioData[this.attributes['playOrder'][this.attributes['index']]].title +
                     ' Would you like to resume?';
                 reprompt = 'You can say yes to resume or no to play from the top.';
@@ -106,7 +101,7 @@ var stateHandlers = {
         },
 
         'VersionOriginalIntent' : function () { 
-            this.response.speak("Version Original Intent").listen("Version Original Intent");
+            this.response.speak("OK. Playing the Original version").listen("OK. Playing the Original version");
             this.emit(':responseReady');
         },
         'VersionBackingTrackIntent' : function () { 
@@ -126,9 +121,16 @@ var stateHandlers = {
             this.response.speak("Audio Rewind Intent").listen("Audio Rewind Intent");
             this.emit(':responseReady');
         },
-        'EndSessionIntent' : function () { 
-            this.response.speak("EndSession Intent").listen("EndSession Intent");
-            this.handler.state = constants.states.START_MODE;
+        
+        'AudioStopIntent' : function () {    
+            this.handler.state = constants.states.RESUME_DECISION_MODE;
+            this.response.speak("Audio Stop Intent").listen("Audio Stop Intent");
+            this.emit(':responseReady');
+        },
+
+        'AMAZON.PauseIntent': function () {    
+            this.handler.state = constants.states.RESUME_DECISION_MODE;
+            this.response.speak("Audio Pause Intent").listen("Audio Pause Intent");
             this.emit(':responseReady');
         },
         /*
@@ -148,11 +150,11 @@ var stateHandlers = {
             this.response.speak(message).listen(message);
             this.emit(':responseReady');
         },
-        
+        */
         'SessionEndedRequest' : function () {
             // No session ended logic
         },
-        */
+
         'Unhandled' : function () {
             var message = 'Sorry, I could not understand. You can say, Next or Previous to navigate through the playlist.';
             this.response.speak(message).listen(message);
@@ -160,6 +162,49 @@ var stateHandlers = {
         }
     }),
 
+    resumeDecisionModeIntentHandlers : Alexa.CreateStateHandler(constants.states.RESUME_DECISION_MODE, {
+        'LaunchRequest' : function () {
+            /*
+             *  Session resumed in PLAY_MODE STATE.
+             *  If playback had finished during last session :
+             *      Give welcome message.
+             *      Change state to START_STATE to restrict user inputs.
+             *  Else :
+             *      Ask user if he/she wants to resume from last position.
+             *      Change state to RESUME_DECISION_MODE
+             */
+            var message;
+            var reprompt;
+            if (this.attributes['playbackFinished']) {
+                message = 'Welcome to the AWS Podcast. You can say, play the audio to begin the podcast.';
+                reprompt = 'You can say, play the audio, to begin.';
+            } else {
+                message = 'You were listening to ' + audioData[this.attributes['playOrder'][this.attributes['index']]].title +
+                    ' Would you like to resume?';
+                reprompt = 'You can say yes to resume or no to play from the top.';
+            }
+            this.response.speak(message).listen(reprompt);
+            this.emit(':responseReady');
+        },
+        'PlayAudioWithArtistIntent' : function () {
+            this.response.speak("PLAY MODE").listen("PLAY MODE");
+            this.emit(':responseReady');
+        },
+        'PlayAudioWithSongNameIntent' : function () {
+            this.handler.state = constants.states.PLAY_MODE;
+            this.response.speak("Play Audio With Song Name Intent").listen("Play Audio With Song Name Intent");
+            this.emit(':responseReady');
+        },        
+        'SessionEndedRequest' : function () {
+            // No session ended logic
+        },
+        'Unhandled' : function () {
+            var message = 'Sorry, I could not understand. You can say, Next or Previous to navigate through the playlist.';
+            this.response.speak(message).listen(message);
+            this.emit(':responseReady');
+        },
+
+    }),
     /*
     remoteControllerHandlers : Alexa.CreateStateHandler(constants.states.PLAY_MODE, {
         /*
