@@ -16,6 +16,7 @@ import _ from 'lodash';
 const songDatabase = FuzzySet(songList);
 const artistDatabase = FuzzySet(_.map(artists, (a) => (a.name) ));
 const songCache = {};
+const grooveCache = {};
 
 var accessKeyId =  process.env.AWS_ACCESS_KEY || secrets.AWS_ACCESS_KEY;
 var secretAccessKey = process.env.AWS_SECRET_KEY || secrets.AWS_SECRET_KEY;
@@ -78,14 +79,21 @@ export default ({ config, db }) => {
     const filename = uuidv1();
     const tempo = req.query.tempo || 100;
     const groove = req.query.groove || 'pop';
+    const cacheKey = `${groove}@${tempo}`;
     const mma = generateGroove({ tempo: tempo, groove: groove });
-    generateTrack(mma, filename, (err, gres) => {
-      if(err) {
-        res.status(400).send({ error: err });
-      } else {
-        res.json(gres);
-      }
-    });
+    if (grooveCache[cacheKey]) {
+      res.json(grooveCache[cacheKey]);
+    } else {
+      generateTrack(mma, filename, (err, gres) => {
+        if(err) {
+          res.status(400).send({ error: err });
+        } else {
+          grooveCache[cacheKey] = gres;
+          res.json(gres);
+        }
+      });
+    }
+    
   });
 
   api.get('/artists/search', (req, res) => {
