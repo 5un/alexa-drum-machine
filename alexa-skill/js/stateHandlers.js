@@ -163,11 +163,11 @@ var stateHandlers = {
             if(this.attributes['currentContent'] === 'song') {
                 const song = this.attributes['currentSong'];
                 const tempo = this.attributes['currentTempo'];
-                controller.playSong.call(this, song, tempo + 40);
+                controller.playSong.call(this, song, tempo + 20);
             } else if(this.attributes['currentContent'] === 'groove')  {
                 const groove = this.attributes['currentGroove'];
                 const tempo = this.attributes['currentTempo'];
-                controller.playGroove.call(this, groove, tempo + 40);
+                controller.playGroove.call(this, groove, tempo + 20);
             }
 
             // VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
@@ -179,11 +179,11 @@ var stateHandlers = {
             if(this.attributes['currentContent'] === 'song') {
                 const song = this.attributes['currentSong'];
                 let tempo = parseInt(this.attributes['currentTempo']);
-                controller.playSong.call(this, song, Math.max(tempo - 40, constants.minTempo) );
+                controller.playSong.call(this, song, Math.max(tempo - 20, constants.minTempo) );
             } else if(this.attributes['currentContent'] === 'groove')  {
                 const groove = this.attributes['currentGroove'];
                 let tempo = parseInt(this.attributes['currentTempo']);
-                controller.playGroove.call(this, groove, Math.max(tempo - 40, constants.minTempo) );
+                controller.playGroove.call(this, groove, Math.max(tempo - 20, constants.minTempo) );
             }
 
             // VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
