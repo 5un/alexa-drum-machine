@@ -347,6 +347,7 @@ hello-mary-lou
 hello-young-lovers
 here-there-and-everywhere
 heres-that-rainy-day
+hey-jude
 hey-good-looking
 hey-look-me-over
 hey-there
