@@ -4,30 +4,8 @@
 Tempo 115
 Keysig C
 
-Groove Metronome2-4
- z * 2
-
-Groove JazzRockIntro
-Begin Solo
-    Voice SynthStrings2 //TremoloStrings
-    Octave 5
-    Harmony 3Above
-    Articulate 110
-    Volume m
-    Begin Riff
-        1a&;
-        1b&;
-        1c;
-    End
-End
-
-Swell mp m 4
-Chord Sequence {1 1 90 * 12}
-1         Ab6
-2        Bb
-3        +C
-Chord Sequence L2
-4        /
+Groove Metronome4
+z * 1
 
 Repeat
 Groove JazzRock

@@ -16,8 +16,8 @@ export function generateGroove(opts) {
   Keysig C
   Transpose up per 4
 
-  Groove Metronome2-4
-    z * 2
+  Groove Metronome4
+    z * 1
 
   Chord Off
   Arpeggio Off
