@@ -130,30 +130,40 @@ var stateHandlers = {
         },
 
         'VersionOriginalIntent' : function () { 
-            var message = "OK. Playing the Original version";
-            this.response.speak(message).listen(message);
-            const intent = this.event.request.intent;
-            VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
-                this.emit(':responseReady');
-            });            
+            if(this.attributes['currentContent'] === 'song') {
+                const song = this.attributes['currentSong'];
+                let tempo = this.attributes['currentTempo'];
+                controller.playSong.call(this, song, tempo, true);
+            }
+            // var message = "OK. Playing the Original version";
+            // this.response.speak(message).listen(message);
+            // const intent = this.event.request.intent;
+            // VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
+            //     this.emit(':responseReady');
+            // });            
         },
         'VersionBackingTrackIntent' : function () { 
-            var message = "Version Backing Track Intent";
-            this.response.speak(message).listen(message);
-            const intent = this.event.request.intent;
-            VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
-                this.emit(':responseReady');
-            });            
+            if(this.attributes['currentContent'] === 'song') {
+                const song = this.attributes['currentSong'];
+                let tempo = this.attributes['currentTempo'];
+                controller.playSong.call(this, song, tempo);
+            }
+            // var message = "Version Backing Track Intent";
+            // this.response.speak(message).listen(message);
+            // const intent = this.event.request.intent;
+            // VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
+            //     this.emit(':responseReady');
+            // });            
         },
         'VariationFasterIntent' : function () { 
             if(this.attributes['currentContent'] === 'song') {
                 const song = this.attributes['currentSong'];
                 const tempo = this.attributes['currentTempo'];
-                controller.playSong.call(this, song, tempo + 10);
+                controller.playSong.call(this, song, tempo + 40);
             } else if(this.attributes['currentContent'] === 'groove')  {
                 const groove = this.attributes['currentGroove'];
                 const tempo = this.attributes['currentTempo'];
-                controller.playGroove.call(this, genre, tempo + 10);
+                controller.playGroove.call(this, groove, tempo + 40);
             }
 
             // VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
@@ -163,12 +173,12 @@ var stateHandlers = {
         'VariationSlowerIntent' : function () { 
             if(this.attributes['currentContent'] === 'song') {
                 const song = this.attributes['currentSong'];
-                const tempo = this.attributes['currentTempo'];
-                controller.playSong.call(this, song, Math.max(tempo - 10, constants.minTempo) );
+                let tempo = this.attributes['currentTempo'];
+                controller.playSong.call(this, song, Math.max(tempo - 40, constants.minTempo) );
             } else if(this.attributes['currentContent'] === 'groove')  {
                 const groove = this.attributes['currentGroove'];
-                const tempo = this.attributes['currentTempo'];
-                controller.playGroove.call(this, genre, Math.max(tempo - 10, constants.minTempo) );
+                let tempo = this.attributes['currentTempo'];
+                controller.playGroove.call(this, groove, Math.max(tempo - 40, constants.minTempo) );
             }
 
             // VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
@@ -405,20 +415,27 @@ var controller = function () {
                     this.emit(':responseReady');
                });
         },
-        playSong: function (song, tempo) {
+        playSong: function (song, tempo, originalVersion = false) {
             this.handler.state = constants.states.PLAY_MODE;
             request
-               .get(`${constants.beatGeneratorAPI}/songs/search?q=${song}${(tempo !== undefined) ? '&tempo=' + tempo : ''}`)
-               .end((err, res) => {
+                .get(`${constants.beatGeneratorAPI}/songs/search?q=${song}`)
+                //.get(`${constants.beatGeneratorAPI}/songs/search?q=${song}${(tempo !== undefined) ? ('&tempo=' + tempo) : ''}`)
+                .end((err, res) => {
                     // TODO set tempo
-                    const tempo = res.body.originalTempo;
+                    const newTempo = tempo || res.body.originalTempo;
                     this.attributes['currentContent'] = 'song';
                     this.attributes['currentSong'] = song;
-                    this.attributes['currentTempo'] = tempo;
+                    this.attributes['currentTempo'] = newTempo;
 
-                    const confirmation = `Playing the song ${song} at tempo ${tempo}`
+                    let confirmation;
+                    if(originalVersion){
+                        this.response.audioPlayerPlay('REPLACE_ALL', res.body.originalURL, 1, null, 0);
+                        confirmation = `Playing the original song for ${song}`
+                    } else {
+                        this.response.audioPlayerPlay('REPLACE_ALL', res.body.url, 1, null, 0);
+                        confirmation = `Playing the backing track of ${song} at ${newTempo} BPM`
+                    }
                     this.response.speak(confirmation);
-                    this.response.audioPlayerPlay('REPLACE_ALL', res.body.url, 1, null, 0);
                     this.emit(':responseReady');
                     // VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
                     //     this.emit(':responseReady');
