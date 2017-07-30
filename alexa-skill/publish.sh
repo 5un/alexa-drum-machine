@@ -1,5 +1,4 @@
 rm index.zip 
-cd js
-zip ../index.zip * -r
-cd ..
-aws lambda update-function-code --function-name alexaDrumMachineLambdaFunc --zip-file fileb://index.zip --profile=soravis
+zip -r index.zip js
+#aws lambda update-function-code --function-name alexaDrumMachineLambdaFunc --zip-file fileb://index.zip --profile=<your profile name>
+
