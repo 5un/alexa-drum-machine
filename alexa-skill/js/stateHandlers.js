@@ -205,6 +205,7 @@ var stateHandlers = {
             this.handler.state = constants.states.RESUME_DECISION_MODE;
             this.response.speak(message).listen(message);
             const intent = this.event.request.intent;
+            controller.stop.call(this)
             VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
                 this.emit(':responseReady');
             });            
