@@ -131,6 +131,7 @@ var stateHandlers = {
         },
 
         'VersionOriginalIntent' : function () { 
+            this.response.speak('Original version');
             if(this.attributes['currentContent'] === 'song') {
                 const song = this.attributes['currentSong'];
                 let tempo = this.attributes['currentTempo'];
@@ -144,6 +145,7 @@ var stateHandlers = {
             // });            
         },
         'VersionBackingTrackIntent' : function () { 
+            this.response.speak('Backingtrack');
             if(this.attributes['currentContent'] === 'song') {
                 const song = this.attributes['currentSong'];
                 let tempo = this.attributes['currentTempo'];
@@ -157,6 +159,7 @@ var stateHandlers = {
             // });            
         },
         'VariationFasterIntent' : function () { 
+            this.response.speak('OK, Faster');
             if(this.attributes['currentContent'] === 'song') {
                 const song = this.attributes['currentSong'];
                 const tempo = this.attributes['currentTempo'];
@@ -172,13 +175,14 @@ var stateHandlers = {
             // });            
         },
         'VariationSlowerIntent' : function () { 
+            this.response.speak('OK, Slower');
             if(this.attributes['currentContent'] === 'song') {
                 const song = this.attributes['currentSong'];
-                let tempo = this.attributes['currentTempo'];
+                let tempo = parseInt(this.attributes['currentTempo']);
                 controller.playSong.call(this, song, Math.max(tempo - 40, constants.minTempo) );
             } else if(this.attributes['currentContent'] === 'groove')  {
                 const groove = this.attributes['currentGroove'];
-                let tempo = this.attributes['currentTempo'];
+                let tempo = parseInt(this.attributes['currentTempo']);
                 controller.playGroove.call(this, groove, Math.max(tempo - 40, constants.minTempo) );
             }
 
@@ -414,7 +418,7 @@ var controller = function () {
                     this.attributes['currentTempo'] = tempo; // Default Tempo
 
                     const confirmation = `Playing the ${genre} groove at tempo ${tempo}`
-                    this.response.speak(confirmation);
+                    //this.response.speak(confirmation);
                     this.response.audioPlayerPlay('REPLACE_ALL', res.body.url, 1, null, 0);
                     this.emit(':responseReady');
                });
@@ -422,8 +426,7 @@ var controller = function () {
         playSong: function (song, tempo, originalVersion = false) {
             this.handler.state = constants.states.PLAY_MODE;
             request
-                .get(`${constants.beatGeneratorAPI}/songs/search?q=${song}`)
-                //.get(`${constants.beatGeneratorAPI}/songs/search?q=${song}${(tempo !== undefined) ? ('&tempo=' + tempo) : ''}`)
+                .get(`${constants.beatGeneratorAPI}/songs/search?q=${song}${(tempo !== undefined) ? ('&tempo=' + tempo) : ''}`)
                 .end((err, res) => {
                     // TODO set tempo
                     const newTempo = tempo || res.body.originalTempo;
@@ -439,7 +442,7 @@ var controller = function () {
                         this.response.audioPlayerPlay('REPLACE_ALL', res.body.url, 1, null, 0);
                         confirmation = `Playing the backing track of ${song} at ${newTempo} BPM`
                     }
-                    this.response.speak(confirmation);
+                    //this.response.speak(confirmation);
                     this.emit(':responseReady');
                     // VoiceLabs.track(this.event.session, intent.name, intent.slots, message, (error, response) => {
                     //     this.emit(':responseReady');
